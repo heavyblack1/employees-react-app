@@ -1,0 +1,13 @@
+input {
+    margin: 1rem;
+}
+
+ul {
+    margin: 1rem;
+    text-align: center;
+}
+
+li {
+    list-style: none;
+}
+
