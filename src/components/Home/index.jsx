@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinus, faUser, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { PageContainer, EmployeeList, EmployeeItem, EmployeeForm, Buttons, TabButton, RemoveEmployeeBtn, PlanButton } from "./homeStyles";
 import { employees } from "./EmployeesData";
 
@@ -82,17 +84,17 @@ export default function Home() {
             workforceMeters++;
         }
         else {
-            workforceMeters += 0.5
+            workforceMeters += 0.5;
         }
     }
 
-    console.log(`Meters done in 1 hour: ${workforceMeters}`)
-    console.log(`Meters required in 1 hour: ${(storeTask.meters / storeTask.time)}`)
+    console.log(`Meters done in 1 hour: ${workforceMeters}`);
+    console.log(`Meters required in 1 hour: ${(storeTask.meters / storeTask.time)}`);
     if (workforceMeters >= storeTask.meters / storeTask.time) {
-        console.log("Enough workforce")
+        console.log("Enough workforce");
     }
     else {
-        console.log("Not enough workforce!")
+        console.log("Not enough workforce!");
     }
     // Allow switch between tabs
     const switchTab = (e, newValue) => {
@@ -106,9 +108,11 @@ export default function Home() {
             <h1>Plánování Výkopových Prací</h1>
             <Buttons>
                 <TabButton name="list-of-employees" activeTab={activeTab} onClick={(event) => { switchTab(event, 'list-of-employees'); }}>
+                    <FontAwesomeIcon icon={faUser} style={{ color: "#03A9F4" }} />&nbsp;
                     Zaměstnanci
                 </TabButton>
                 <TabButton name="store-storage" activeTab={activeTab} onClick={(event) => { switchTab(event, 'store-storage'); }}>
+                    <FontAwesomeIcon icon={faTasks} style={{ color: "#4CAF50" }} />&nbsp;
                     Úkol
                 </TabButton>
             </Buttons>
@@ -122,7 +126,7 @@ export default function Home() {
                                     <RemoveEmployeeBtn
                                         onClick={() => { RemoveEmployee(employee.id); }}
                                     >
-                                        🗙
+                                        <FontAwesomeIcon icon={faMinus} style={{ color: "#B71C1C" }} />
                                     </RemoveEmployeeBtn>
                                 </EmployeeItem>
                             ))
