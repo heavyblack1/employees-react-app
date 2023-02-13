@@ -1,0 +1,41 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  NODE_ENV: production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: pnpm ci
+
+    - name: Build project
+      run: pnpm run build
+
+    - name: Copy to gh-pages branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+
+        git checkout -b gh-pages
+        cp -r dist/* .
+        git add .
+        git commit -m "Automated deployment to GitHub Pages"
+
+        git push origin gh-pages:gh-pages -f
+
+    - name: Clean up
+      run: git checkout main

@@ -23,8 +23,11 @@ export default function Home() {
     });
     const [addEmployee, setAddEmployee] = useState({
         id: (employeesCount.current + 1),
-        name: ""
+        name: "",
+        sex: ""
     });
+    const [workforceMeters, setWorkforceMeters] = useState(0);
+    const [workforceRequirement, setWorkforceRequirement] = useState(storeTask.meters / storeTask.time);
 
     // called upon change
     const handleChange = (e) => {
@@ -49,7 +52,7 @@ export default function Home() {
     // remove employee
     const RemoveEmployee = (id) => {
         // keep not selected employees
-        setListOfEmployees(listOfEmployees.filter(employee => employee.id != id));
+        setListOfEmployees(listOfEmployees.filter(employee => employee.id !== id));
     };
     // Handle task
     const taskManagement = (e) => {
@@ -74,28 +77,31 @@ export default function Home() {
 
     };
 
-    // count requirements
-    let workforceMeters = 0;
-    let workforceRequirement = storeTask.meters / storeTask.time;
+    useEffect(() => {
+        // count requirements
 
-    for (let i = 0; i < listOfEmployees.length; i++) {
-        console.log(listOfEmployees[i]);
-        if (listOfEmployees[i].sex === 'M') {
-            workforceMeters++;
+        setWorkforceMeters(0);
+        setWorkforceRequirement(storeTask.meters / storeTask.time);
+        for (let i = 0; i < listOfEmployees.length; i++) {
+            console.log(listOfEmployees[i]);
+            if (listOfEmployees[i].sex === 'M') {
+                setWorkforceMeters(prevValue => prevValue + 1);
+            }
+            else {
+                setWorkforceMeters(prevValue => prevValue + 0.5);
+            }
+        }
+
+        console.log(`Meters done in 1 hour: ${workforceMeters}`);
+        console.log(`Meters required in 1 hour: ${(storeTask.meters / storeTask.time)}`);
+        if (workforceMeters >= storeTask.meters / storeTask.time) {
+            console.log("Enough workforce");
         }
         else {
-            workforceMeters += 0.5;
+            console.log("Not enough workforce!");
         }
-    }
 
-    console.log(`Meters done in 1 hour: ${workforceMeters}`);
-    console.log(`Meters required in 1 hour: ${(storeTask.meters / storeTask.time)}`);
-    if (workforceMeters >= storeTask.meters / storeTask.time) {
-        console.log("Enough workforce");
-    }
-    else {
-        console.log("Not enough workforce!");
-    }
+    }, [listOfEmployees, storeTask]);
     // Allow switch between tabs
     const switchTab = (e, newValue) => {
         e.preventDefault();
