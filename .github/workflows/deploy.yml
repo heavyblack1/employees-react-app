@@ -1,41 +1,61 @@
-name: Deploy to GitHub Pages
+name: Github Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
-env:
-  NODE_ENV: production
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: pnpm ci
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
 
-    - name: Build project
-      run: pnpm run build
+      #- name: Set node
+      #  uses: actions/setup-node@v3
+        # with:
+        #   node-version: 16.x
+        #   registry-url: https://registry.npmjs.org/
+        #   cache: "pnpm"
 
-    - name: Copy to gh-pages branch
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
-      run: |
-        git config --global user.email "actions@github.com"
-        git config --global user.name "GitHub Actions"
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          version: 7
 
-        git checkout -b gh-pages
-        cp -r dist/* .
-        git add .
-        git commit -m "Automated deployment to GitHub Pages"
+      - name: Install deps
+        run: pnpm install
 
-        git push origin gh-pages:gh-pages -f
+      - name: Run build
+        run: pnpm run build
 
-    - name: Clean up
-      run: git checkout main
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'dist/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
